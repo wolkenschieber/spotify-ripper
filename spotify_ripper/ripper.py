@@ -4,8 +4,10 @@ from __future__ import unicode_literals
 
 from subprocess import Popen, PIPE
 from colorama import Fore, Style
+from spotify_ripper.targetprovider import *
 from spotify_ripper.utils import *
 from spotify_ripper.id3 import set_id3_and_cover
+from spotify_ripper.songlibrary import *
 import os
 import sys
 import time
@@ -121,7 +123,10 @@ class Ripper(threading.Thread):
         if args.Flat and self.current_playlist:
             self.idx_digits = len(str(len(self.current_playlist.tracks)))
 
-        self.base_dir = self.get_base_dir()
+        if self.current_playlist and self.current_playlist.name != "":
+            targetprovider = PlaylistTargetProvider(self.args, self.current_playlist)
+        else:
+            targetprovider = TargetProvider(self.args)
 
         # ripping loop
         for idx, track in enumerate(tracks):
@@ -132,7 +137,7 @@ class Ripper(threading.Thread):
                     print(Fore.RED + 'Track is not available, skipping...' + Fore.RESET)
                     continue
 
-                self.prepare_path(self.base_dir, idx, track)
+                self.mp3_file = targetprovider.get_mp3_file(self.base_dir, idx, track)
 
                 if not args.overwrite and os.path.exists(self.mp3_file):
                     print(Fore.YELLOW + "Skipping " + track.link.uri + Fore.RESET)
@@ -314,35 +319,36 @@ class Ripper(threading.Thread):
             self.logged_out.wait()
         self.event_loop.stop()
 
-    def get_base_dir(self):
-        args = self.args
-        base_dir = norm_path(args.directory[0]) if args.directory is not None else os.getcwd()
-
-        if self.current_playlist and self.current_playlist.name != "":
-            playlist_name = to_ascii(args, escape_filename_part(self.current_playlist.name))
-            os.path.join(base_dir, playlist_name)
-
-        return base_dir
-
-    def prepare_path(self, base_dir, idx, track):
-        args = self.args
-
-        artist = to_ascii(args, escape_filename_part(track.artists[0].name))
-        album = to_ascii(args, escape_filename_part(track.album.name))
-        track_name = to_ascii(args, escape_filename_part(track.name))
-        if args.flat:
-            self.mp3_file = to_ascii(args, os.path.join(base_dir, artist + " - " + track_name + ".mp3"))
-        elif args.Flat:
-            filled_idx = str(idx).zfill(self.idx_digits)
-            self.mp3_file = to_ascii(args,
-                                     os.path.join(base_dir, filled_idx + " - " + artist + " - " + track_name + ".mp3"))
-        else:
-            self.mp3_file = to_ascii(args, os.path.join(base_dir, artist, album, artist + " - " + track_name + ".mp3"))
-
-        # create directory if it doesn't exist
-        mp3_path = os.path.dirname(self.mp3_file)
-        if not os.path.exists(mp3_path):
-            os.makedirs(mp3_path)
+    # def get_base_dir(self):
+    #     args = self.args
+    #     base_dir = norm_path(args.directory[0]) if args.directory is not None else os.getcwd()
+    #
+    #     if self.current_playlist and self.current_playlist.name != "":
+    #         playlist_name = to_ascii(args, escape_filename_part(self.current_playlist.name))
+    #         base_dir = os.path.join(base_dir, playlist_name)
+    #
+    #     return base_dir
+    #
+    # def get_mp3_file(self, base_dir, idx, track):
+    #     args = self.args
+    #
+    #     artist = to_ascii(args, escape_filename_part(track.artists[0].name))
+    #     album = to_ascii(args, escape_filename_part(track.album.name))
+    #     track_name = to_ascii(args, escape_filename_part(track.name))
+    #     if args.flat:
+    #         mp3_file = to_ascii(args, os.path.join(base_dir, artist + " - " + track_name + ".mp3"))
+    #     elif args.Flat:
+    #         filled_idx = str(idx).zfill(self.idx_digits)
+    #         mp3_file = to_ascii(args, os.path.join(base_dir, filled_idx + " - " + artist + " - " + track_name + ".mp3"))
+    #     else:
+    #         mp3_file = to_ascii(args, os.path.join(base_dir, artist, album, artist + " - " + track_name + ".mp3"))
+    #
+    #     # create directory if it doesn't exist
+    #     mp3_path = os.path.dirname(mp3_file)
+    #     if not os.path.exists(mp3_path):
+    #         os.makedirs(mp3_path)
+    #
+    #     return mp3_file
 
     def prepare_rip(self, track):
         args = self.args

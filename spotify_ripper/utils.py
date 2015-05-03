@@ -81,6 +81,7 @@ MB_UNIT = "MB"
 GB_UNIT = "GB"
 '''Gigabytes abbreviation'''
 
+
 # borrowed from eyeD3
 def format_size(size, short=False):
     '''Format ``size`` (nuber of bytes) into string format doing KB, MB, or GB
@@ -186,6 +187,7 @@ def format_time(seconds, total=None, short=False):
                     seconds // limit1, unit1,
                     (seconds % limit1) // limit2, unit2)
         return u'  ~inf'
+
 
 def empty_tree():
     tree = lambda: collections.defaultdict(tree)
