@@ -125,10 +125,10 @@ class Ripper(threading.Thread):
 
         if self.current_playlist and self.current_playlist.name != "":
             targetprovider = PlaylistTargetProvider(self.args, self.current_playlist)
+            song_library = PlaylistLibrary(targetprovider)
         else:
             targetprovider = TargetProvider(self.args)
-
-        song_library = SongLibrary(targetprovider)
+            song_library = SongLibrary(targetprovider)
 
         # ripping loop
         for idx, track in enumerate(tracks):
@@ -144,17 +144,11 @@ class Ripper(threading.Thread):
                 if not args.overwrite and song_library.contains_track(artist, album, track_name):
                     print(Fore.YELLOW + "Skipping " + track.link.uri + Fore.RESET)
                     print(Fore.CYAN + self.mp3_file + Fore.RESET)
+
+                    song_library.update_existing(artist, album, track_name, idx)
                     continue
 
-                # TODO library registration and filerename according to (new) index
-
-                # if not args.overwrite and os.path.exists(self.mp3_file):
-                #     print(Fore.YELLOW + "Skipping " + track.link.uri + Fore.RESET)
-                #     print(Fore.CYAN + self.mp3_file + Fore.RESET)
-                #     continue
-
                 self.mp3_file = targetprovider.get_mp3_file(self.base_dir, idx, track)
-
                 self.session.player.load(track)
                 self.prepare_rip(track)
                 self.duration = track.duration
@@ -166,6 +160,8 @@ class Ripper(threading.Thread):
 
                 self.end_progress()
                 self.finish_rip(track)
+
+                song_library.store_new_track(artist, album, track_name, idx, self.mp3_file)
 
                 # update id3v2 with metadata and embed front cover image
                 set_id3_and_cover(args, self.mp3_file, track)
@@ -191,6 +187,8 @@ class Ripper(threading.Thread):
                 self.session.player.play(False)
                 self.clean_up_partial()
                 continue
+
+        song_library.update_library()
 
         # actually removing the tracks from playlist
         if args.remove_from_playlist and self.current_playlist and len(self.tracks_to_remove) > 0:
