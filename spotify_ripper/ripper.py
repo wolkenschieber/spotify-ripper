@@ -32,6 +32,9 @@ class Ripper(threading.Thread):
     ripping = False
     finished = False
     current_playlist = None
+    base_dir = None
+    duration = None
+    position = 0
     tracks_to_remove = []
     end_of_track = threading.Event()
     idx_digits = 3
@@ -118,6 +121,8 @@ class Ripper(threading.Thread):
         if args.Flat and self.current_playlist:
             self.idx_digits = len(str(len(self.current_playlist.tracks)))
 
+        self.base_dir = self.get_base_dir()
+
         # ripping loop
         for idx, track in enumerate(tracks):
             try:
@@ -127,7 +132,7 @@ class Ripper(threading.Thread):
                     print(Fore.RED + 'Track is not available, skipping...' + Fore.RESET)
                     continue
 
-                self.prepare_path(idx, track)
+                self.prepare_path(self.base_dir, idx, track)
 
                 if not args.overwrite and os.path.exists(self.mp3_file):
                     print(Fore.YELLOW + "Skipping " + track.link.uri + Fore.RESET)
@@ -311,7 +316,7 @@ class Ripper(threading.Thread):
 
     def prepare_path(self, idx, track):
         args = self.args
-        base_dir = norm_path(args.directory[0]) if args.directory is not None else os.getcwd()
+        base_dir = self.get_base_dir()
 
         artist = to_ascii(args, escape_filename_part(track.artists[0].name))
         album = to_ascii(args, escape_filename_part(track.album.name))
@@ -329,6 +334,16 @@ class Ripper(threading.Thread):
         mp3_path = os.path.dirname(self.mp3_file)
         if not os.path.exists(mp3_path):
             os.makedirs(mp3_path)
+
+    def get_base_dir(self):
+        args = self.args
+        base_dir = norm_path(args.directory[0]) if args.directory is not None else os.getcwd()
+
+        if self.current_playlist and self.current_playlist.name != "":
+            playlist_name = to_ascii(args, escape_filename_part(self.current_playlist.name))
+            os.path.join(base_dir, playlist_name)
+
+        return base_dir
 
     def prepare_rip(self, track):
         args = self.args
@@ -370,7 +385,7 @@ class Ripper(threading.Thread):
         pct = int(self.position * 100 // self.duration)
         x = int(pct * 40 // 100)
         print_str(("\rProgress: [" + ("=" * x) + (" " * (40 - x)) + "] %d:%02d / %d:%02d") % (
-        pos_seconds // 60, pos_seconds % 60, dur_seconds // 60, dur_seconds % 60))
+            pos_seconds // 60, pos_seconds % 60, dur_seconds // 60, dur_seconds % 60))
 
     def end_progress(self):
         print_str("\n")

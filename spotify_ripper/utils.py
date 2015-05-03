@@ -3,8 +3,11 @@
 from __future__ import unicode_literals
 
 from colorama import Fore, Style
-import os, sys, errno
+import os
+import sys
+import errno
 import re
+import math
 
 
 def print_str(str):
@@ -30,21 +33,24 @@ def escape_filename_part(part):
 
 def to_ascii(args, _str):
     """convert unicode to ascii if necessary"""
+    #
     # python 3 renamed unicode to str
-    if sys.version_info >= (3, 0):
-        if isinstance(_str, bytes) and not args.ascii:
-            return str(_str, "utf-8")
-        elif isinstance(_str, str) and args.ascii:
-            return _str.encode('ascii', 'ignore').decode("utf-8")
-        else:
-            return _str
+    # if sys.version_info >= (3, 0):
+
+    if isinstance(_str, bytes) and not args.ascii:
+        return str(_str, "utf-8")
+    elif isinstance(_str, str) and args.ascii:
+        return _str.encode('ascii', 'ignore').decode("utf-8")
     else:
-        if isinstance(_str, str) and not args.ascii:
-            return unicode(_str, "utf-8")
-        elif isinstance(_str, unicode) and args.ascii:
-            return _str.encode('ascii', 'ignore').decode("utf-8")
-        else:
-            return _str
+        return _str
+        #
+        # else:
+        # if isinstance(_str, str) and not args.ascii:
+        #        return unicode(_str, "utf-8")
+        #    elif isinstance(_str, unicode) and args.ascii:
+        #        return _str.encode('ascii', 'ignore').decode("utf-8")
+        #    else:
+        #        return _str
 
 
 def rm_file(file_name):
@@ -148,7 +154,7 @@ def format_time(seconds, total=None, short=False):
         tstr = '%02d:%02d' % (mins, secs)
         if int(hours):
             tstr = '%02d:%s' % (hours, tstr)
-        return (int(hours), int(mins), int(secs), tstr)
+        return int(hours), int(mins), int(secs), tstr
 
     if not short:
         hours, mins, secs, curr_str = time_tuple(seconds)
@@ -171,7 +177,7 @@ def format_time(seconds, total=None, short=False):
 
         if seconds < 60:
             return u'   {0:02d}s'.format(seconds)
-        for i in xrange(len(units) - 1):
+        for i in range(len(units) - 1):
             unit1, limit1 = units[i]
             unit2, limit2 = units[i + 1]
             if seconds >= limit1:
