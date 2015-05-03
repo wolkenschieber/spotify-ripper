@@ -314,9 +314,18 @@ class Ripper(threading.Thread):
             self.logged_out.wait()
         self.event_loop.stop()
 
-    def prepare_path(self, idx, track):
+    def get_base_dir(self):
         args = self.args
-        base_dir = self.get_base_dir()
+        base_dir = norm_path(args.directory[0]) if args.directory is not None else os.getcwd()
+
+        if self.current_playlist and self.current_playlist.name != "":
+            playlist_name = to_ascii(args, escape_filename_part(self.current_playlist.name))
+            os.path.join(base_dir, playlist_name)
+
+        return base_dir
+
+    def prepare_path(self, base_dir, idx, track):
+        args = self.args
 
         artist = to_ascii(args, escape_filename_part(track.artists[0].name))
         album = to_ascii(args, escape_filename_part(track.album.name))
@@ -334,16 +343,6 @@ class Ripper(threading.Thread):
         mp3_path = os.path.dirname(self.mp3_file)
         if not os.path.exists(mp3_path):
             os.makedirs(mp3_path)
-
-    def get_base_dir(self):
-        args = self.args
-        base_dir = norm_path(args.directory[0]) if args.directory is not None else os.getcwd()
-
-        if self.current_playlist and self.current_playlist.name != "":
-            playlist_name = to_ascii(args, escape_filename_part(self.current_playlist.name))
-            os.path.join(base_dir, playlist_name)
-
-        return base_dir
 
     def prepare_rip(self, track):
         args = self.args

@@ -10,6 +10,24 @@ import os
 import sys
 
 
+def get_id3_metadata(mp3_file):
+    audio = mp3.MP3(mp3_file, ID3=id3.ID3)
+
+    artist = audio.get('TPE1')
+    if artist is not None:
+        artist = artist.text[0]
+
+    album = audio.get('TALB')
+    if album is not None:
+        album = album.text[0]
+
+    title = audio.get('TIT2')
+    if title is not None:
+        title = title.text[0]
+
+    return artist, album, title
+
+
 def set_id3_and_cover(args, mp3_file, track):
     # ensure everything is loaded still
     if not track.is_loaded:
@@ -114,3 +132,5 @@ def set_id3_and_cover(args, mp3_file, track):
     # delete cover
     if image is not None:
         rm_file("cover.jpg")
+
+

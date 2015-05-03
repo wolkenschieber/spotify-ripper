@@ -8,6 +8,7 @@ import sys
 import errno
 import re
 import math
+import collections
 
 
 def print_str(str):
@@ -185,3 +186,7 @@ def format_time(seconds, total=None, short=False):
                     seconds // limit1, unit1,
                     (seconds % limit1) // limit2, unit2)
         return u'  ~inf'
+
+def empty_tree():
+    tree = lambda: collections.defaultdict(tree)
+    return tree()
