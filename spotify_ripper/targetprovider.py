@@ -1,4 +1,5 @@
 import os
+import spotify
 from spotify_ripper.utils import norm_path, to_ascii, escape_filename_part
 
 
@@ -12,12 +13,23 @@ class TargetProvider():
     def get_mp3_file(self, idx, track):
         args = self.args
 
+        # artist = to_ascii(args, escape_filename_part(track.artists[0].name))
+        # album = to_ascii(args, escape_filename_part(track.album.name))
+        # track_name = to_ascii(args, escape_filename_part(track.name))
+
+        artist, album, track_name = self.get_track_metadata(track)
+
+        mp3_file = self.get_mp3_file(idx, artist, album, track_name)
+        return mp3_file
+
+    def get_track_metadata(self, track):
+        args = self.args
+
         artist = to_ascii(args, escape_filename_part(track.artists[0].name))
         album = to_ascii(args, escape_filename_part(track.album.name))
         track_name = to_ascii(args, escape_filename_part(track.name))
 
-        mp3_file = self.get_mp3_file(idx, artist, album, track_name)
-        return mp3_file
+        return artist, album, track_name
 
     def get_mp3_file(self, idx, artist, album, track_name):
         args = self.args

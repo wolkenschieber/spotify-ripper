@@ -67,8 +67,8 @@ class FolderTargetProvider(TargetProvider):
         return self.folder
 
 if __name__ == '__main__':
-    target_provider = FolderTargetProvider("/home/keibak/Musik/Curriculum Vitae --- Jamendo - MP3 VBR 192k")
-    song_lib = SongLibrary(target_provider)
+    folder_target_provider = FolderTargetProvider("/home/keibak/Musik/Curriculum Vitae --- Jamendo - MP3 VBR 192k")
+    song_lib = SongLibrary(folder_target_provider)
     print(song_lib.musiclibrary)
 
 

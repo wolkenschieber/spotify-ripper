@@ -128,6 +128,8 @@ class Ripper(threading.Thread):
         else:
             targetprovider = TargetProvider(self.args)
 
+        song_library = SongLibrary(targetprovider)
+
         # ripping loop
         for idx, track in enumerate(tracks):
             try:
@@ -137,12 +139,21 @@ class Ripper(threading.Thread):
                     print(Fore.RED + 'Track is not available, skipping...' + Fore.RESET)
                     continue
 
-                self.mp3_file = targetprovider.get_mp3_file(self.base_dir, idx, track)
+                artist, album, track_name = targetprovider.get_track_metadata(track)
 
-                if not args.overwrite and os.path.exists(self.mp3_file):
+                if not args.overwrite and song_library.contains_track(artist, album, track_name):
                     print(Fore.YELLOW + "Skipping " + track.link.uri + Fore.RESET)
                     print(Fore.CYAN + self.mp3_file + Fore.RESET)
                     continue
+
+                # TODO library registration and filerename according to (new) index
+
+                # if not args.overwrite and os.path.exists(self.mp3_file):
+                #     print(Fore.YELLOW + "Skipping " + track.link.uri + Fore.RESET)
+                #     print(Fore.CYAN + self.mp3_file + Fore.RESET)
+                #     continue
+
+                self.mp3_file = targetprovider.get_mp3_file(self.base_dir, idx, track)
 
                 self.session.player.load(track)
                 self.prepare_rip(track)
