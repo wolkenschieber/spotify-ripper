@@ -101,7 +101,7 @@ def main():
     group.add_argument('-l', '--last', action='store_true', help='Use last login credentials')
     parser.add_argument('-m', '--pcm', action='store_true', help='Saves a .pcm file with the raw PCM data')
     parser.add_argument('-o', '--overwrite', action='store_true', help='Overwrite existing MP3 files [Default=skip]')
-    parser.add_argument('-pl', '--playlist', action='store_true',
+    parser.add_argument('-P', '--playlist', action='store_true',
                         help='Store playlist in separate directories and keep track of changes')
     parser.add_argument('-s', '--strip-colors', action='store_true', help='Strip coloring from output[Default=colors]')
     parser.add_argument('-v', '--vbr', help='Lame VBR encoding quality setting [Default=0]')

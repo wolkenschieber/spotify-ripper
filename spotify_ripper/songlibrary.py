@@ -1,20 +1,17 @@
 # -*- coding: utf8 -*-
-from logging import info
-
 import os
 import re
 import sys
 import collections
 import shutil
 import fnmatch
-import logging
+from colorama import Fore, Style
 from spotify_ripper.utils import empty_tree
 from spotify_ripper.id3 import get_id3_metadata
 from spotify_ripper.targetprovider import *
 
 
 class SongLibrary():
-    logger = logging.getLogger('spotify.songlibrary')
 
     attic = 'attic'
     target_provider = None
@@ -34,8 +31,7 @@ class SongLibrary():
         includes = r'|'.join([fnmatch.translate(x) for x in includes])
         excludes = r'|'.join([fnmatch.translate(x) for x in excludes]) or r'$.'
 
-        print("includes: " + includes)
-        print("excludes: " + excludes)
+        print("Scanning library")
 
         for root, dirs, files in os.walk(self.target_provider.get_base_dir()):
 
@@ -50,7 +46,6 @@ class SongLibrary():
                 mp3_file = os.path.join(root, fname)
                 artist, album, title = get_id3_metadata(mp3_file)
 
-                print(mp3_file)
                 self.musiclibrary[artist][album][title] = mp3_file
 
     def contains_track(self, artist, album, title):
@@ -87,6 +82,8 @@ class PlaylistLibrary(SongLibrary):
         self.playlist[artist][album][title] = index
 
     def update_library(self):
+        print("Updating library")
+        print(Fore.GREEN + "Moving existing files" + Fore.RESET)
         for artist, ati in self.playlist.items():
             for album, ti in ati.items():
                 for title, index in ti.items():
@@ -100,38 +97,19 @@ class PlaylistLibrary(SongLibrary):
                         continue
 
                     target_file = self.target_provider.get_mp3_file(index, artist, album, title)
-                    shutil.move(source_file, target_file)
+
+                    if source_file != target_file:
+                        print(Fore.CYAN + "Moving " + source_file + " to " + target_file + Fore.RESET)
+                        shutil.move(source_file, target_file)
                     del self.musiclibrary[artist][album][title]
 
+        print(Fore.GREEN + "Moving unmatched files to attic" + Fore.RESET)
         attic_dir = os.path.join(self.target_provider.get_base_dir(), self.attic)
         if not os.path.exists(attic_dir):
-             os.makedirs(attic_dir)
+            os.makedirs(attic_dir)
         for artist, atf in self.musiclibrary.items():
             for ablum, tf in atf.items():
                 for title, filename in tf.items():
-                    shutil.move(filename, os.path.join(attic_dir, os.path.basename(filename)))
-
-
-
-# for testing
-class FolderTargetProvider(TargetProvider):
-
-    folder = None
-
-    def __init__(self, folder):
-        self.folder = folder
-
-    def get_base_dir(self):
-        return self.folder
-
-if __name__ == '__main__':
-    #folder_target_provider = FolderTargetProvider("/home/keibak/Musik/Curriculum Vitae --- Jamendo - MP3 VBR 192k")
-    folder_target_provider = FolderTargetProvider("/home/keibak/Musik/Martin_Tungevaag_-_Wicked_Wonderland-(8056450046671)-WEB-2014-ZzZz")
-    song_lib = PlaylistLibrary(folder_target_provider)
-    song_lib.update_existing("foo", "bar", "baz", 3)
-    print(song_lib.musiclibrary)
-    print(song_lib.playlist)
-    song_lib.update_library()
-
-
-
+                    attic_file = os.path.join(attic_dir, os.path.basename(filename))
+                    print(Fore.MAGENTA + "Archiving "+filename + " to " + attic_file + Fore.RESET)
+                    shutil.move(filename, attic_file)
