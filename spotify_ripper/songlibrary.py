@@ -101,8 +101,17 @@ class PlaylistLibrary(SongLibrary):
 
                     target_file = self.target_provider.get_mp3_file(index, artist, album, title)
                     shutil.move(source_file, target_file)
+                    del self.musiclibrary[artist][album][title]
 
-        # TODO move unmatched library entries into the attic
+        attic_dir = os.path.join(self.target_provider.get_base_dir(), self.attic)
+        if not os.path.exists(attic_dir):
+             os.makedirs(attic_dir)
+        for artist, atf in self.musiclibrary.items():
+            for ablum, tf in atf.items():
+                for title, filename in tf.items():
+                    shutil.move(filename, os.path.join(attic_dir, os.path.basename(filename)))
+
+
 
 # for testing
 class FolderTargetProvider(TargetProvider):
