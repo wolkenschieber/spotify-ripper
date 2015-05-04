@@ -39,7 +39,7 @@ class Ripper(threading.Thread):
     position = 0
     tracks_to_remove = []
     end_of_track = threading.Event()
-    idx_digits = 3
+  #  idx_digits = 3
 
     def __init__(self, args):
         threading.Thread.__init__(self)
@@ -123,7 +123,7 @@ class Ripper(threading.Thread):
         if args.Flat and self.current_playlist:
             self.idx_digits = len(str(len(self.current_playlist.tracks)))
 
-        if self.current_playlist and self.current_playlist.name != "":
+        if args.playlist and self.current_playlist and self.current_playlist.name != "":
             targetprovider = PlaylistTargetProvider(self.args, self.current_playlist)
             song_library = PlaylistLibrary(targetprovider)
         else:
@@ -143,12 +143,12 @@ class Ripper(threading.Thread):
 
                 if not args.overwrite and song_library.contains_track(artist, album, track_name):
                     print(Fore.YELLOW + "Skipping " + track.link.uri + Fore.RESET)
-                    print(Fore.CYAN + self.mp3_file + Fore.RESET)
+                    print(Fore.CYAN + artist + " " + album + " " + track_name + Fore.RESET)
 
                     song_library.update_existing(artist, album, track_name, idx)
                     continue
 
-                self.mp3_file = targetprovider.get_mp3_file(self.base_dir, idx, track)
+                self.mp3_file = targetprovider.get_mp3_file_from_track(idx, track)
                 self.session.player.load(track)
                 self.prepare_rip(track)
                 self.duration = track.duration

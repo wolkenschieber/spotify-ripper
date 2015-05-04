@@ -10,9 +10,8 @@ class TargetProvider():
     def __init__(self, args):
         self.args = args
 
-    def get_mp3_file(self, idx, track):
-        args = self.args
-
+    def get_mp3_file_from_track(self, idx, track):
+        # args = self.args
         # artist = to_ascii(args, escape_filename_part(track.artists[0].name))
         # album = to_ascii(args, escape_filename_part(track.album.name))
         # track_name = to_ascii(args, escape_filename_part(track.name))
@@ -38,7 +37,7 @@ class TargetProvider():
         if args.flat:
             mp3_file = to_ascii(args, os.path.join(base_dir, artist + " - " + track_name + ".mp3"))
         elif args.Flat:
-            filled_idx = str(idx).zfill(self.idx_digits)
+            filled_idx = str(idx).zfill(self.get_idx_digits())
             mp3_file = to_ascii(args, os.path.join(base_dir, filled_idx + " - " + artist + " - " + track_name + ".mp3"))
         else:
             mp3_file = to_ascii(args, os.path.join(base_dir, artist, album, artist + " - " + track_name + ".mp3"))
@@ -53,6 +52,9 @@ class TargetProvider():
     def get_base_dir(self):
         base_dir = norm_path(self.args.directory[0]) if self.args.directory is not None else os.getcwd()
         return base_dir
+
+    def get_idx_digits(self):
+        return 3
 
 
 class PlaylistTargetProvider(TargetProvider):
@@ -72,3 +74,8 @@ class PlaylistTargetProvider(TargetProvider):
             base_dir = os.path.join(base_dir, playlist_name)
 
         return base_dir
+
+    def get_idx_digits(self):
+        if self.args.Flat and self.playlist:
+            idx_digits = len(str(len(self.playlist.tracks)))
+            return idx_digits
