@@ -1,7 +1,7 @@
 spotify-ripper |Version|
 ========================
 
-A fork of
+A fork of a fork of
 `spotify-ripper <https://github.com/robbeofficial/spotifyripper>`__ that
 uses `pyspotify <https://github.com/mopidy/pyspotify>`__ v2.x
 
