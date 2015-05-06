@@ -4,9 +4,12 @@ from __future__ import unicode_literals
 
 from subprocess import Popen, PIPE
 from colorama import Fore, Style
+
 from spotify_ripper.utils import *
 from spotify_ripper.id3 import set_id3_and_cover
-import os, sys
+from spotify_ripper.songlibrary import *
+import os
+import sys
 import time
 import threading
 import spotify
@@ -26,9 +29,11 @@ class Ripper(threading.Thread):
     ripping = False
     finished = False
     current_playlist = None
+    base_dir = None
+    duration = None
+    position = 0
     tracks_to_remove = []
     end_of_track = threading.Event()
-    idx_digits = 3
 
     def __init__(self, args):
         threading.Thread.__init__(self)
@@ -56,6 +61,7 @@ class Ripper(threading.Thread):
             if not os.path.exists(app_key_path):
                 print("\n" + Fore.YELLOW + "Please copy your spotify_appkey.key to " + default_dir +
                     ", or use the --key|-k option" + Fore.RESET)
+
                 sys.exit(1)
 
             config.load_application_key_file(app_key_path)
@@ -95,7 +101,8 @@ class Ripper(threading.Thread):
         print("Logging in...")
         if args.last:
             self.login_as_last()
-        elif args.user != None and args.password == None:
+
+        elif args.user is not None and args.password is None:
             password = getpass.getpass()
             self.login(args.user[0], password)
         else:
@@ -112,6 +119,13 @@ class Ripper(threading.Thread):
         if args.Flat and self.current_playlist:
             self.idx_digits = len(str(len(self.current_playlist.tracks)))
 
+        if args.playlist and self.current_playlist and self.current_playlist.name != "":
+            targetprovider = PlaylistTargetProvider(self.args, self.current_playlist)
+            song_library = PlaylistLibrary(targetprovider)
+        else:
+            targetprovider = TargetProvider(self.args)
+            song_library = SongLibrary(targetprovider)
+
         # ripping loop
         for idx, track in enumerate(tracks):
             try:
@@ -121,13 +135,16 @@ class Ripper(threading.Thread):
                     print(Fore.RED + 'Track is not available, skipping...' + Fore.RESET)
                     continue
 
-                self.prepare_path(idx, track)
+                artist, album, track_name = targetprovider.get_track_metadata(track)
 
-                if not args.overwrite and os.path.exists(self.mp3_file):
+                if not args.overwrite and song_library.contains_track(artist, album, track_name):
                     print(Fore.YELLOW + "Skipping " + track.link.uri + Fore.RESET)
-                    print(Fore.CYAN + self.mp3_file + Fore.RESET)
+                    print(Fore.CYAN + artist + " " + album + " " + track_name + Fore.RESET)
+
+                    song_library.update_existing(artist, album, track_name, idx)
                     continue
 
+                self.mp3_file = targetprovider.get_mp3_file_from_track(idx, track)
                 self.session.player.load(track)
                 self.prepare_rip(track)
                 self.duration = track.duration
@@ -139,6 +156,8 @@ class Ripper(threading.Thread):
 
                 self.end_progress()
                 self.finish_rip(track)
+
+                song_library.store_new_track(artist, album, track_name, idx, self.mp3_file)
 
                 # update id3v2 with metadata and embed front cover image
                 set_id3_and_cover(args, self.mp3_file, track)
@@ -165,10 +184,13 @@ class Ripper(threading.Thread):
                 self.clean_up_partial()
                 continue
 
+
+        song_library.update_library()
+
         # actually removing the tracks from playlist
         if args.remove_from_playlist and self.current_playlist and len(self.tracks_to_remove) > 0:
             print(Fore.YELLOW + "Removing successfully ripped tracks from playlist " +
-                    self.current_playlist.name + "..." + Fore.RESET)
+                  self.current_playlist.name + "..." + Fore.RESET)
 
             self.current_playlist.remove_tracks(self.tracks_to_remove)
             self.session.process_events()
@@ -244,6 +266,7 @@ class Ripper(threading.Thread):
                     x = [int(x) - 1 for x in hyphen_string.split('-')]
                     return range(x[0], x[-1]+1)
                 return itertools.chain(*[hyphen_range(r) for r in comma_string.split(',')])
+
             picks = sorted(set(list(range_string(pick))))
             return itertools.chain(*[get_track(p) for p in picks])
 
@@ -299,38 +322,20 @@ class Ripper(threading.Thread):
             self.logged_out.wait()
         self.event_loop.stop()
 
-    def prepare_path(self, idx, track):
-        args = self.args
-        base_dir = norm_path(args.directory[0]) if args.directory != None else os.getcwd()
-
-        artist = to_ascii(args, escape_filename_part(track.artists[0].name))
-        album = to_ascii(args, escape_filename_part(track.album.name))
-        track_name = to_ascii(args, escape_filename_part(track.name))
-        if args.flat:
-            self.mp3_file = to_ascii(args, os.path.join(base_dir, artist + " - " + track_name + ".mp3"))
-        elif args.Flat:
-            filled_idx = str(idx).zfill(self.idx_digits)
-            self.mp3_file = to_ascii(args, os.path.join(base_dir, filled_idx + " - " + artist + " - " + track_name + ".mp3"))
-        else:
-            self.mp3_file = to_ascii(args, os.path.join(base_dir, artist, album, artist + " - " + track_name + ".mp3"))
-
-        # create directory if it doesn't exist
-        mp3_path = os.path.dirname(self.mp3_file)
-        if not os.path.exists(mp3_path):
-            os.makedirs(mp3_path)
-
     def prepare_rip(self, track):
         args = self.args
 
         print(Fore.GREEN + "Ripping " + track.link.uri + Fore.RESET)
         print(Fore.CYAN + self.mp3_file + Fore.RESET)
         if args.cbr:
-            self.rip_proc = Popen(["lame", "--silent", "-cbr", "-b", args.bitrate, "-h", "-r", "-", self.mp3_file], stdin=PIPE)
+            self.rip_proc = Popen(["lame", "--silent", "-cbr", "-b", args.bitrate, "-h", "-r", "-", self.mp3_file],
+                                  stdin=PIPE)
         else:
             self.rip_proc = Popen(["lame", "--silent", "-V", args.vbr, "-h", "-r", "-", self.mp3_file], stdin=PIPE)
         self.pipe = self.rip_proc.stdin
         if args.pcm:
           self.pcm_file = open(self.mp3_file[:-4] + ".pcm", 'w')
+
         self.ripping = True
 
     def finish_rip(self, track):
@@ -357,10 +362,12 @@ class Ripper(threading.Thread):
         dur_seconds = self.duration // 1000
         pct = int(self.position * 100 // self.duration)
         x = int(pct * 40 // 100)
-        print_str(self.args, ("\rProgress: [" + ("=" * x) + (" " * (40 - x)) + "] %d:%02d / %d:%02d") % (pos_seconds // 60, pos_seconds % 60, dur_seconds // 60, dur_seconds % 60))
+
+        print_str(("\rProgress: [" + ("=" * x) + (" " * (40 - x)) + "] %d:%02d / %d:%02d") % (
+            pos_seconds // 60, pos_seconds % 60, dur_seconds // 60, dur_seconds % 60))
 
     def end_progress(self):
-        print_str(self.args, "\n")
+        print_str("\n")
 
     def rip(self, session, audio_format, frame_bytes, num_frames):
         if self.ripping:
@@ -369,6 +376,7 @@ class Ripper(threading.Thread):
             self.pipe.write(frame_bytes);
             if self.args.pcm:
               self.pcm_file.write(frame_bytes)
+
 
     def abort(self):
         self.session.player.play(False)

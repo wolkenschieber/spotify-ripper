@@ -8,15 +8,38 @@ from stat import ST_SIZE
 from spotify_ripper.utils import *
 import os, sys
 import requests
+import os
+import sys
+
+
+def get_id3_metadata(mp3_file):
+    audio = mp3.MP3(mp3_file, ID3=id3.ID3)
+
+    artist = audio.get('TPE1')
+    if artist is not None:
+        artist = artist.text[0]
+
+    album = audio.get('TALB')
+    if album is not None:
+        album = album.text[0]
+
+    title = audio.get('TIT2')
+    if title is not None:
+        title = title.text[0]
+
+    return artist, album, title
+
 
 def set_id3_and_cover(args, mp3_file, track):
     # ensure everything is loaded still
-    if not track.is_loaded: track.load()
-    if not track.album.is_loaded: track.album.load()
+    if not track.is_loaded:
+        track.load()
+    if not track.album.is_loaded:
+        track.album.load()
     album_browser = track.album.browse()
     album_browser.load()
 
-    # calculate num of tracks on disc and num of dics
+    # calculate num of tracks on disc and num of discs
     num_discs = 0
     num_tracks = 0
     for track_browse in album_browser.tracks:
@@ -77,6 +100,7 @@ def set_id3_and_cover(args, mp3_file, track):
                 )
             )
 
+
         def id3_to_ascii(_str, _str_ascii):
             return _str if args.ascii_path_only else _str_ascii
 
@@ -135,4 +159,8 @@ def set_id3_and_cover(args, mp3_file, track):
         print(Fore.YELLOW + "Warning: exception while saving id3 tag: " + str(id3.error) + Fore.RESET)
 
     # delete cover
-    if image is not None: rm_file("cover.jpg")
+
+    if image is not None:
+        rm_file("cover.jpg")
+
+

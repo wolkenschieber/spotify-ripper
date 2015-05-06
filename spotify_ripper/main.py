@@ -12,12 +12,14 @@ import argparse
 import pkg_resources
 import ConfigParser
 
+
 def load_config(args, defaults):
     settings_dir = args.settings[0] if args.settings is not None else default_settings_dir()
     config_file = os.path.join(settings_dir, "config.ini")
     if os.path.exists(config_file):
         try:
             config = ConfigParser.SafeConfigParser()
+
             config.read(config_file)
             if not config.has_section("main"): return defaults
             config_items = dict(config.items("main"))
@@ -43,6 +45,7 @@ def load_config(args, defaults):
 
     return defaults
 
+
 def main():
     # in case we changed the location of the settings directory where the config file lives, we need to parse this argument
     # before we parse the rest of the arguments (which can overwrite the options in the config file)
@@ -64,6 +67,7 @@ def main():
     rip a single file: spotify-ripper -u user -p password spotify:track:52xaypL0Kjzk0ngwv3oBPR
     rip entire playlist: spotify-ripper -u user -p password spotify:user:username:playlist:4vkGNcsS8lRXj4q945NIA4
     rip a list of URIs: spotify-ripper -u user -p password list_of_uris.txt
+
     search for tracks to rip: spotify-ripper -l -b 160 -o "album:Rumours track:'the chain'"
     ''')
 
@@ -81,6 +85,7 @@ def main():
 
     # set defaults
     parser.set_defaults(**defaults)
+
 
     parser.add_argument('-a', '--ascii', action='store_true', help='Convert the file name and the ID3 tag to ASCII encoding [Default=utf-8]')
     parser.add_argument('-A', '--ascii-path-only', action='store_true', help='Convert the file name (but not the ID3 tag) to ASCII encoding [Default=utf-8]')

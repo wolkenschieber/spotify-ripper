@@ -3,18 +3,24 @@
 from __future__ import unicode_literals
 
 from colorama import Fore, Style
-import os, sys, errno
+import os
+import sys
+import errno
 import re
+import math
+import collections
 
-def print_str(args, _str):
+
+def print_str(str):
     """print without newline"""
-    if not args.has_log:
-        sys.stdout.write(_str)
-        sys.stdout.flush()
+    sys.stdout.write(str)
+    sys.stdout.flush()
+
 
 def norm_path(path):
     """normalize path"""
     return os.path.normpath(os.path.realpath(path))
+
 
 # borrowed from AndersTornkvist's fork
 def escape_filename_part(part):
@@ -43,6 +49,7 @@ def to_ascii(args, _str, on_error='ignore'):
         else:
             return _str
 
+
 def rm_file(file_name):
     try:
         os.remove(file_name)
@@ -52,8 +59,11 @@ def rm_file(file_name):
             print(Fore.YELLOW + "Warning: error while trying to remove file " + file_name + Fore.RESET)
             print(str(e))
 
+
+
 def default_settings_dir():
     return norm_path(os.path.join(os.path.expanduser("~"), ".spotify-ripper"))
+
 
 KB_BYTES = 1024
 '''Number of bytes per KB (2^10)'''
@@ -67,6 +77,7 @@ MB_UNIT = "MB"
 '''Megabytes abbreviation'''
 GB_UNIT = "GB"
 '''Gigabytes abbreviation'''
+
 
 # borrowed from eyeD3
 def format_size(size, short=False):
@@ -112,6 +123,7 @@ def format_size(size, short=False):
             str_value = str_value[:3]
         return "{0:>3s}{1}".format(str_value, suffix)
 
+
 # borrowed from eyeD3
 def format_time(seconds, total=None, short=False):
     '''
@@ -131,6 +143,7 @@ def format_time(seconds, total=None, short=False):
     If ``total`` is not None it will also be formatted and
     appended to the result seperated by ' / '.
     '''
+
     def time_tuple(ts):
         if ts is None or ts < 0:
             ts = 0
@@ -141,6 +154,7 @@ def format_time(seconds, total=None, short=False):
         if int(hours):
             tstr = '%02d:%s' % (hours, tstr)
         return (int(hours), int(mins), int(secs), tstr)
+
 
     if not short:
         hours, mins, secs, curr_str = time_tuple(seconds)
@@ -163,6 +177,7 @@ def format_time(seconds, total=None, short=False):
 
         if seconds < 60:
             return u'   {0:02d}s'.format(seconds)
+
         for i in xrange(len(units) - 1):
             unit1, limit1 = units[i]
             unit2, limit2 = units[i + 1]
@@ -171,3 +186,9 @@ def format_time(seconds, total=None, short=False):
                     seconds // limit1, unit1,
                     (seconds % limit1) // limit2, unit2)
         return u'  ~inf'
+
+
+def empty_tree():
+    tree = lambda: collections.defaultdict(tree)
+    return tree()
+

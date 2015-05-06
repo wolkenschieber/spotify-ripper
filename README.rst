@@ -47,10 +47,16 @@ Command Line
 
 .. code::
 
+<<<<<<< HEAD
     usage: spotify-ripper [-h] [-S SETTINGS] [-a] [-A] [-b {160,320,96}] [-c]
                           [-d DIRECTORY] [-f] [-F] [-g {artist,album}] [-k KEY]
                           [-u USER] [-p PASSWORD] [-l] [-L LOG] [-m] [-o] [-s]
                           [-v VBR] [-V] [-r]
+=======
+    usage: spotify-ripper [-h] [-S SETTINGS] [-a] [-b {160,320,96}] [-c]
+                          [-d DIRECTORY] [-f] [-F] [-k KEY] [-u USER]
+                          [-p PASSWORD] [-l] [-m] [-o] [-s] [-v VBR] [-V] [-r]
+>>>>>>> local-master
                           uri
 
     Rips Spotify URIs to MP3s with ID3 tags and album covers
@@ -62,9 +68,13 @@ Command Line
       -h, --help            show this help message and exit
       -S SETTINGS, --settings SETTINGS
                             Path to settings, config and temp files directory [Default=~/.spotify-ripper]
+<<<<<<< HEAD
       -a, --ascii           Convert the file name and the ID3 tag to ASCII encoding [Default=utf-8]
       -A, --ascii-path-only
                             Convert the file name (but not the ID3 tag) to ASCII encoding [Default=utf-8]
+=======
+      -a, --ascii           Convert file name to ASCII encoding [Default=utf-8]
+>>>>>>> local-master
       -b {160,320,96}, --bitrate {160,320,96}
                             Bitrate rip quality [Default=320]
       -c, --cbr             Lame CBR encoding [Default=VBR]
@@ -72,14 +82,20 @@ Command Line
                             Base directory where ripped MP3s are saved [Default=cwd]
       -f, --flat            Save all songs to a single directory instead of organizing by album/artist/song
       -F, --Flat            Similar to --flat [-f] but includes the playlist index at the start of the song file
+<<<<<<< HEAD
       -g {artist,album}, --genres {artist,album}
                             Attempt to retrieve genre information from Spotify's Web API [Default=skip]
+=======
+>>>>>>> local-master
       -k KEY, --key KEY     Path to Spotify application key file [Default=cwd]
       -u USER, --user USER  Spotify username
       -p PASSWORD, --password PASSWORD
                             Spotify password [Default=ask interactively]
       -l, --last            Use last login credentials
+<<<<<<< HEAD
       -L LOG, --log LOG     Log in a log-friendly format to a file (use - to log to stdout)
+=======
+>>>>>>> local-master
       -m, --pcm             Saves a .pcm file with the raw PCM data
       -o, --overwrite       Overwrite existing MP3 files [Default=skip]
       -s, --strip-colors    Strip coloring from output[Default=colors]
@@ -91,7 +107,10 @@ Command Line
     Example usage:
         rip a single file: spotify-ripper -u user -p password spotify:track:52xaypL0Kjzk0ngwv3oBPR
         rip entire playlist: spotify-ripper -u user -p password spotify:user:username:playlist:4vkGNcsS8lRXj4q945NIA4
+<<<<<<< HEAD
         rip a list of URIs: spotify-ripper -u user -p password list_of_uris.txt
+=======
+>>>>>>> local-master
         search for tracks to rip: spotify-ripper -l -b 160 -o "album:Rumours track:'the chain'"
 
 Config File
