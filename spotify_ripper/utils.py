@@ -6,11 +6,11 @@ from colorama import Fore, Style
 import os, sys, errno
 import re
 
-def print_str(str):
+def print_str(args, _str):
     """print without newline"""
-    sys.stdout.write(str)
-    sys.stdout.flush()
-
+    if not args.has_log:
+        sys.stdout.write(_str)
+        sys.stdout.flush()
 
 def norm_path(path):
     """normalize path"""
@@ -25,21 +25,21 @@ def escape_filename_part(part):
     part = re.sub(r"(^\.+\s*|(?<=\.)\.+|\s*\.+$)", r'', part)
     return part
 
-def to_ascii(args, _str):
+def to_ascii(args, _str, on_error='ignore'):
     """convert unicode to ascii if necessary"""
     # python 3 renamed unicode to str
     if sys.version_info >= (3, 0):
         if isinstance(_str, bytes) and not args.ascii:
             return str(_str, "utf-8")
         elif isinstance(_str, str) and args.ascii:
-            return _str.encode('ascii', 'ignore').decode("utf-8")
+            return _str.encode('ascii', on_error).decode("utf-8")
         else:
             return _str
     else:
         if isinstance(_str, str) and not args.ascii:
             return unicode(_str, "utf-8")
         elif isinstance(_str, unicode) and args.ascii:
-            return _str.encode('ascii', 'ignore').decode("utf-8")
+            return _str.encode('ascii', on_error).decode("utf-8")
         else:
             return _str
 
