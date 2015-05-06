@@ -10,7 +10,7 @@ import os, sys
 import time
 import argparse
 import pkg_resources
-import ConfigParser
+import configparser
 
 
 def load_config(args, defaults):
@@ -18,7 +18,8 @@ def load_config(args, defaults):
     config_file = os.path.join(settings_dir, "config.ini")
     if os.path.exists(config_file):
         try:
-            config = ConfigParser.SafeConfigParser()
+            # module ConfigParser unknown in Python3
+            config = configparser.ConfigParser()
 
             config.read(config_file)
             if not config.has_section("main"): return defaults
@@ -39,7 +40,7 @@ def load_config(args, defaults):
 
             # overwrite any existing defaults
             defaults.update(config_items)
-        except (ConfigParser.Error) as e:
+        except (configparser.Error) as e:
             print("\nError parsing config file: " + config_file)
             print(str(e))
 
@@ -102,6 +103,8 @@ def main():
     parser.add_argument('-L', '--log', nargs=1, help='Log in a log-friendly format to a file (use - to log to stdout)')
     parser.add_argument('-m', '--pcm', action='store_true', help='Saves a .pcm file with the raw PCM data')
     parser.add_argument('-o', '--overwrite', action='store_true', help='Overwrite existing MP3 files [Default=skip]')
+    parser.add_argument('-P', '--playlist', action='store_true',
+                        help='Store playlist in separate directories and keep track of changes')
     parser.add_argument('-s', '--strip-colors', action='store_true', help='Strip coloring from output[Default=colors]')
     parser.add_argument('-v', '--vbr', help='Lame VBR encoding quality setting [Default=0]')
     parser.add_argument('-V', '--version', action='version', version=pkg_resources.require("spotify-ripper")[0].version)
