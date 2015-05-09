@@ -113,6 +113,7 @@ def set_id3_and_cover(args, mp3_file, track):
         if album is not None: audio.tags.add(id3.TALB(text=[id3_to_ascii(track.album.name, album)], encoding=3))
         audio.tags.add(id3.TIT2(text=[id3_to_ascii(track.name, title)], encoding=3))
         audio.tags.add(id3.TPE1(text=[id3_to_ascii(track.artists[0].name, artist)], encoding=3))
+        audio.tags.add(id3.TDRC(text=[str(track.album.year)], encoding=3))
         audio.tags.add(id3.TDRL(text=[str(track.album.year)], encoding=3))
         audio.tags.add(id3.TPOS(text=[idx_of_total_str(track.disc, num_discs)], encoding=3))
         audio.tags.add(id3.TRCK(text=[idx_of_total_str(track.index, num_tracks)], encoding=3))
