@@ -31,6 +31,7 @@ def escape_filename_part(part):
     part = re.sub(r"(^\.+\s*|(?<=\.)\.+|\s*\.+$)", r'', part)
     return part
 
+
 def to_ascii(args, _str, on_error='ignore'):
     """convert unicode to ascii if necessary"""
     # python 3 renamed unicode to str
@@ -58,7 +59,6 @@ def rm_file(file_name):
         if e.errno != errno.ENOENT:
             print(Fore.YELLOW + "Warning: error while trying to remove file " + file_name + Fore.RESET)
             print(str(e))
-
 
 
 def default_settings_dir():
@@ -178,7 +178,7 @@ def format_time(seconds, total=None, short=False):
         if seconds < 60:
             return u'   {0:02d}s'.format(seconds)
 
-        #xrange won't work in Python3
+        # xrange won't work in Python3
         for i in range(len(units) - 1):
             unit1, limit1 = units[i]
             unit2, limit2 = units[i + 1]

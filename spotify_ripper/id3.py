@@ -100,7 +100,6 @@ def set_id3_and_cover(args, mp3_file, track):
                 )
             )
 
-
         def id3_to_ascii(_str, _str_ascii):
             return _str if args.ascii_path_only else _str_ascii
 
@@ -123,10 +122,10 @@ def set_id3_and_cover(args, mp3_file, track):
             audio.tags.add(tcon_tag)
 
         def bit_rate_str(bit_rate):
-           brs = "%d kb/s" % bit_rate
-           if not args.cbr:
-              brs = "~" + brs
-           return brs
+            brs = "%d kb/s" % bit_rate
+            if not args.cbr:
+                brs = "~" + brs
+            return brs
 
         def mode_str(mode):
             modes = ["Stereo", "Joint Stereo", "Dual Channel", "Mono"]
@@ -135,19 +134,21 @@ def set_id3_and_cover(args, mp3_file, track):
             else:
                 return ""
 
-        print(Fore.GREEN + Style.BRIGHT + os.path.basename(mp3_file) + Style.NORMAL + "\t[ " + format_size(os.stat(mp3_file)[ST_SIZE]) + " ]" + Fore.RESET)
+        print(Fore.GREEN + Style.BRIGHT + os.path.basename(mp3_file) + Style.NORMAL + "\t[ " + format_size(
+            os.stat(mp3_file)[ST_SIZE]) + " ]" + Fore.RESET)
         print("-" * 79)
         print(Fore.YELLOW + "Setting artist: " + artist + Fore.RESET)
         if album is not None: print(Fore.YELLOW + "Setting album: " + album + Fore.RESET)
         print(Fore.YELLOW + "Setting title: " + title + Fore.RESET)
-        print(Fore.YELLOW + "Setting track info: (" + str(track.index) + ", " + str(num_tracks) + ")"  + Fore.RESET)
-        print(Fore.YELLOW + "Setting disc info: (" + str(track.disc) + ", " + str(num_discs) + ")"  + Fore.RESET)
+        print(Fore.YELLOW + "Setting track info: (" + str(track.index) + ", " + str(num_tracks) + ")" + Fore.RESET)
+        print(Fore.YELLOW + "Setting disc info: (" + str(track.disc) + ", " + str(num_discs) + ")" + Fore.RESET)
         print(Fore.YELLOW + "Setting release year: " + str(track.album.year) + Fore.RESET)
-        if genres is not None and genres: print(Fore.YELLOW + "Setting genres: " + " / ".join(genres_ascii) + Fore.RESET)
+        if genres is not None and genres: print(
+            Fore.YELLOW + "Setting genres: " + " / ".join(genres_ascii) + Fore.RESET)
         if image is not None: print(Fore.YELLOW + "Adding image cover.jpg" + Fore.RESET)
         print("Time: " + format_time(audio.info.length) + "\tMPEG" + str(audio.info.version) +
-            ", Layer " + ("I" * audio.info.layer) + "\t[ " + bit_rate_str(audio.info.bitrate / 1000) +
-            " @ " + str(audio.info.sample_rate) + " Hz - " + mode_str(audio.info.mode) + " ]")
+              ", Layer " + ("I" * audio.info.layer) + "\t[ " + bit_rate_str(audio.info.bitrate / 1000) +
+              " @ " + str(audio.info.sample_rate) + " Hz - " + mode_str(audio.info.mode) + " ]")
         print("-" * 79)
         id3_version = "v%d.%d" % (audio.tags.version[0], audio.tags.version[1])
         print("ID3 " + id3_version + ": " + str(len(audio.tags.values())) + " frames")

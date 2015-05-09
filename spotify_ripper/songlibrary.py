@@ -12,7 +12,6 @@ from spotify_ripper.targetprovider import *
 
 
 class SongLibrary():
-
     attic = 'attic'
     target_provider = None
     musiclibrary = None
@@ -25,7 +24,7 @@ class SongLibrary():
 
     def __readlibrary(self):
         includes = ['*.mp3']
-        excludes = ["*"+self.attic+"*"]
+        excludes = ["*" + self.attic + "*"]
 
         # transform glob patterns to regular expressions
         includes = r'|'.join([fnmatch.translate(x) for x in includes])
@@ -62,7 +61,6 @@ class SongLibrary():
 
 
 class PlaylistLibrary(SongLibrary):
-
     playlist = None
     new_tracks = None
 
@@ -111,5 +109,5 @@ class PlaylistLibrary(SongLibrary):
             for ablum, tf in atf.items():
                 for title, filename in tf.items():
                     attic_file = os.path.join(attic_dir, os.path.basename(filename))
-                    print(Fore.MAGENTA + "Archiving "+filename + " to " + attic_file + Fore.RESET)
+                    print(Fore.MAGENTA + "Archiving " + filename + " to " + attic_file + Fore.RESET)
                     shutil.move(filename, attic_file)

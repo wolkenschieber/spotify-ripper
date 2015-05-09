@@ -30,9 +30,12 @@ def load_config(args, defaults):
             # coerce boolean and none types
             for _key in config_items:
                 item = config_items[_key]
-                if item == 'True': config_items[_key] = True
-                elif item == 'False': config_items[_key] = False
-                elif item == 'None': config_items[_key] = None
+                if item == 'True':
+                    config_items[_key] = True
+                elif item == 'False':
+                    config_items[_key] = False
+                elif item == 'None':
+                    config_items[_key] = None
 
                 # certain options need to be in array (nargs=1)
                 if _key in to_array_options:
@@ -48,10 +51,11 @@ def load_config(args, defaults):
 
 
 def main():
-    # in case we changed the location of the settings directory where the config file lives, we need to parse this argument
-    # before we parse the rest of the arguments (which can overwrite the options in the config file)
+    # in case we changed the location of the settings directory where the config file lives, we need to parse this
+    # argument before we parse the rest of the arguments (which can overwrite the options in the config file)
     settings_parser = argparse.ArgumentParser(add_help=False)
-    settings_parser.add_argument('-S', '--settings', nargs=1, help='Path to settings, config and temp files directory [Default=~/.spotify-ripper]')
+    settings_parser.add_argument('-S', '--settings', nargs=1,
+                                 help='Path to settings, config and temp files directory [Default=~/.spotify-ripper]')
     args, remaining_argv = settings_parser.parse_known_args()
 
     # load config file, overwriting any defaults
@@ -61,10 +65,11 @@ def main():
     }
     defaults = load_config(args, defaults)
 
-    parser = argparse.ArgumentParser(prog='spotify-ripper', description='Rips Spotify URIs to MP3s with ID3 tags and album covers',
-        parents=[settings_parser],
-        formatter_class=argparse.RawTextHelpFormatter,
-        epilog='''Example usage:
+    parser = argparse.ArgumentParser(prog='spotify-ripper',
+                                     description='Rips Spotify URIs to MP3s with ID3 tags and album covers',
+                                     parents=[settings_parser],
+                                     formatter_class=argparse.RawTextHelpFormatter,
+                                     epilog='''Example usage:
     rip a single file: spotify-ripper -u user -p password spotify:track:52xaypL0Kjzk0ngwv3oBPR
     rip entire playlist: spotify-ripper -u user -p password spotify:user:username:playlist:4vkGNcsS8lRXj4q945NIA4
     rip a list of URIs: spotify-ripper -u user -p password list_of_uris.txt
@@ -87,15 +92,19 @@ def main():
     # set defaults
     parser.set_defaults(**defaults)
 
-
-    parser.add_argument('-a', '--ascii', action='store_true', help='Convert the file name and the ID3 tag to ASCII encoding [Default=utf-8]')
-    parser.add_argument('-A', '--ascii-path-only', action='store_true', help='Convert the file name (but not the ID3 tag) to ASCII encoding [Default=utf-8]')
+    parser.add_argument('-a', '--ascii', action='store_true',
+                        help='Convert the file name and the ID3 tag to ASCII encoding [Default=utf-8]')
+    parser.add_argument('-A', '--ascii-path-only', action='store_true',
+                        help='Convert the file name (but not the ID3 tag) to ASCII encoding [Default=utf-8]')
     parser.add_argument('-b', '--bitrate', choices=['160', '320', '96'], help='Bitrate rip quality [Default=320]')
     parser.add_argument('-c', '--cbr', action='store_true', help='Lame CBR encoding [Default=VBR]')
     parser.add_argument('-d', '--directory', nargs=1, help='Base directory where ripped MP3s are saved [Default=cwd]')
-    parser.add_argument('-f', '--flat', action='store_true', help='Save all songs to a single directory instead of organizing by album/artist/song')
-    parser.add_argument('-F', '--Flat', action='store_true', help='Similar to --flat [-f] but includes the playlist index at the start of the song file')
-    parser.add_argument('-g', '--genres', nargs=1, choices=['artist', 'album'], help='Attempt to retrieve genre information from Spotify\'s Web API [Default=skip]')
+    parser.add_argument('-f', '--flat', action='store_true',
+                        help='Save all songs to a single directory instead of organizing by album/artist/song')
+    parser.add_argument('-F', '--Flat', action='store_true',
+                        help='Similar to --flat [-f] but includes the playlist index at the start of the song file')
+    parser.add_argument('-g', '--genres', nargs=1, choices=['artist', 'album'],
+                        help='Attempt to retrieve genre information from Spotify\'s Web API [Default=skip]')
     parser.add_argument('-k', '--key', nargs=1, help='Path to Spotify application key file [Default=cwd]')
     group.add_argument('-u', '--user', nargs=1, help='Spotify username')
     parser.add_argument('-p', '--password', nargs=1, help='Spotify password [Default=ask interactively]')
@@ -108,7 +117,8 @@ def main():
     parser.add_argument('-s', '--strip-colors', action='store_true', help='Strip coloring from output[Default=colors]')
     parser.add_argument('-v', '--vbr', help='Lame VBR encoding quality setting [Default=0]')
     parser.add_argument('-V', '--version', action='version', version=pkg_resources.require("spotify-ripper")[0].version)
-    parser.add_argument('-r', '--remove-from-playlist', action='store_true', help='Delete tracks from playlist after successful ripping [Default=no]')
+    parser.add_argument('-r', '--remove-from-playlist', action='store_true',
+                        help='Delete tracks from playlist after successful ripping [Default=no]')
     parser.add_argument('uri', help='Spotify URI (either URI, a file of URIs or a search query)')
     args = parser.parse_args(remaining_argv)
 
@@ -117,7 +127,7 @@ def main():
     def wrap_stream(stream, convert, strip, autoreset, wrap):
         if wrap:
             wrapper = AnsiToWin32(stream,
-                convert=convert, strip=strip, autoreset=autoreset)
+                                  convert=convert, strip=strip, autoreset=autoreset)
             if wrapper.should_wrap():
                 stream = wrapper.stream
         return stream
@@ -147,6 +157,7 @@ def main():
         print("\n" + Fore.RED + "Aborting..." + Fore.RESET)
         ripper.abort()
         sys.exit(1)
+
 
 if __name__ == '__main__':
     main()

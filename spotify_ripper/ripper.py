@@ -16,10 +16,12 @@ import spotify
 import getpass
 import itertools
 
+
 class BitRate(spotify.utils.IntEnum):
     BITRATE_160K = 0
     BITRATE_320K = 1
-    BITRATE_96K  = 2
+    BITRATE_96K = 2
+
 
 class Ripper(threading.Thread):
     mp3_file = None
@@ -32,6 +34,7 @@ class Ripper(threading.Thread):
     base_dir = None
     duration = None
     position = 0
+    idx_digits = 2
     tracks_to_remove = []
     end_of_track = threading.Event()
 
@@ -60,7 +63,7 @@ class Ripper(threading.Thread):
             app_key_path = os.path.join(default_dir, "spotify_appkey.key")
             if not os.path.exists(app_key_path):
                 print("\n" + Fore.YELLOW + "Please copy your spotify_appkey.key to " + default_dir +
-                    ", or use the --key|-k option" + Fore.RESET)
+                      ", or use the --key|-k option" + Fore.RESET)
 
                 sys.exit(1)
 
@@ -83,13 +86,13 @@ class Ripper(threading.Thread):
             ('96', BitRate.BITRATE_96K)])
         self.session.preferred_bitrate(bit_rates[args.bitrate])
         self.session.on(spotify.SessionEvent.CONNECTION_STATE_UPDATED,
-            self.on_connection_state_changed)
+                        self.on_connection_state_changed)
         self.session.on(spotify.SessionEvent.END_OF_TRACK,
-            self.on_end_of_track)
+                        self.on_end_of_track)
         self.session.on(spotify.SessionEvent.MUSIC_DELIVERY,
-            self.on_music_delivery)
+                        self.on_music_delivery)
         self.session.on(spotify.SessionEvent.PLAY_TOKEN_LOST,
-            self.play_token_lost)
+                        self.play_token_lost)
 
         self.event_loop = spotify.EventLoop(self.session)
         self.event_loop.start()
@@ -170,11 +173,11 @@ class Ripper(threading.Thread):
                             self.tracks_to_remove.append(idx)
                         else:
                             print(Fore.RED + "This track will not be removed from playlist " +
-                                self.current_playlist.name + " since " + self.session.user.canonical_name +
-                                " is not the playlist owner..." + Fore.RESET)
+                                  self.current_playlist.name + " since " + self.session.user.canonical_name +
+                                  " is not the playlist owner..." + Fore.RESET)
                     else:
                         print(Fore.RED + "No playlist specified to remove this track from. " +
-                                "Did you use '-r' without a playlist link?" + Fore.RESET)
+                              "Did you use '-r' without a playlist link?" + Fore.RESET)
 
             except spotify.Error as e:
                 print(Fore.RED + "Spotify error detected" + Fore.RESET)
@@ -183,7 +186,6 @@ class Ripper(threading.Thread):
                 self.session.player.play(False)
                 self.clean_up_partial()
                 continue
-
 
         song_library.update_library()
 
@@ -245,7 +247,9 @@ class Ripper(threading.Thread):
         # list tracks
         print(Fore.GREEN + "Results" + Fore.RESET)
         for track_idx, track in enumerate(result.tracks):
-            print("  " + Fore.YELLOW + str(track_idx + 1) + Fore.RESET + " [" + to_ascii(args, track.album.name) + "] " + to_ascii(args, track.artists[0].name) + " - " + to_ascii(args, track.name) + " (" + str(track.popularity) + ")")
+            print("  " + Fore.YELLOW + str(track_idx + 1) + Fore.RESET + " [" + to_ascii(args,
+                                                                                         track.album.name) + "] " + to_ascii(
+                args, track.artists[0].name) + " - " + to_ascii(args, track.name) + " (" + str(track.popularity) + ")")
 
         pick = raw_input("Pick track(s) (ex 1-3,5): ")
 
@@ -264,7 +268,8 @@ class Ripper(threading.Thread):
             def range_string(comma_string):
                 def hyphen_range(hyphen_string):
                     x = [int(x) - 1 for x in hyphen_string.split('-')]
-                    return range(x[0], x[-1]+1)
+                    return range(x[0], x[-1] + 1)
+
                 return itertools.chain(*[hyphen_range(r) for r in comma_string.split(',')])
 
             picks = sorted(set(list(range_string(pick))))
@@ -292,7 +297,7 @@ class Ripper(threading.Thread):
             self.logged_out.set()
 
     def play_token_lost(self, session):
-        print("\n"  + Fore.RED + "Play token lost, aborting..." + Fore.RESET)
+        print("\n" + Fore.RED + "Play token lost, aborting..." + Fore.RESET)
         self.session.player.play(False)
         self.clean_up_partial()
         self.finished = True
@@ -334,7 +339,7 @@ class Ripper(threading.Thread):
             self.rip_proc = Popen(["lame", "--silent", "-V", args.vbr, "-h", "-r", "-", self.mp3_file], stdin=PIPE)
         self.pipe = self.rip_proc.stdin
         if args.pcm:
-          self.pcm_file = open(self.mp3_file[:-4] + ".pcm", 'w')
+            self.pcm_file = open(self.mp3_file[:-4] + ".pcm", 'w')
 
         self.ripping = True
 
@@ -375,7 +380,7 @@ class Ripper(threading.Thread):
             self.update_progress()
             self.pipe.write(frame_bytes);
             if self.args.pcm:
-              self.pcm_file.write(frame_bytes)
+                self.pcm_file.write(frame_bytes)
 
 
     def abort(self):

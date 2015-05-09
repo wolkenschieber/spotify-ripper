@@ -4,7 +4,6 @@ from spotify_ripper.utils import norm_path, to_ascii, escape_filename_part
 
 
 class TargetProvider():
-
     args = None
 
     def __init__(self, args):
@@ -24,7 +23,7 @@ class TargetProvider():
     def get_track_metadata(self, track):
         args = self.args
 
-        artist = to_ascii(args, escape_filename_part(', '.join(tas.name for tas in track.artists))
+        artist = to_ascii(args, escape_filename_part(', '.join(tas.name for tas in track.artists)))
         album = to_ascii(args, escape_filename_part(track.album.name))
         track_name = to_ascii(args, escape_filename_part(track.name))
 
@@ -58,7 +57,6 @@ class TargetProvider():
 
 
 class PlaylistTargetProvider(TargetProvider):
-
     args = None
     playlist = None
 
