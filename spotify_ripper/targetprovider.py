@@ -23,15 +23,20 @@ class TargetProvider():
     def get_track_metadata(self, track):
         args = self.args
 
-        artist = to_ascii(args, escape_filename_part(', '.join(tas.name for tas in track.artists)))
-        album = to_ascii(args, escape_filename_part(track.album.name))
-        track_name = to_ascii(args, escape_filename_part(track.name))
+        on_error = 'replace' if args.ascii_path_only else 'ignore'
+        album = to_ascii(args, track.album.name, on_error)
+        artist = to_ascii(args, ', '.join(tas.name for tas in track.artists), on_error)
+        track_name = to_ascii(args, track.name, on_error)
 
         return artist, album, track_name
 
     def get_mp3_file(self, idx, artist, album, track_name):
         args = self.args
         base_dir = self.get_base_dir()
+
+        artist = to_ascii(args, escape_filename_part(artist))
+        album = to_ascii(args, escape_filename_part(album))
+        track_name = to_ascii(args, escape_filename_part(track_name))
 
         if args.flat:
             mp3_file = to_ascii(args, os.path.join(base_dir, artist + " - " + track_name + ".mp3"))

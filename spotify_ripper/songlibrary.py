@@ -44,7 +44,6 @@ class SongLibrary():
             for fname in files:
                 mp3_file = os.path.join(root, fname)
                 artist, album, title = get_id3_metadata(mp3_file)
-
                 self.musiclibrary[artist][album][title] = mp3_file
 
     def contains_track(self, artist, album, title):

@@ -116,7 +116,8 @@ def main():
                         help='Store playlist in separate directories and keep track of changes')
     parser.add_argument('-s', '--strip-colors', action='store_true', help='Strip coloring from output[Default=colors]')
     parser.add_argument('-v', '--vbr', help='Lame VBR encoding quality setting [Default=0]')
-    parser.add_argument('-V', '--version', action='version', version=pkg_resources.require("spotify-ripper")[0].version)
+    parser.add_argument('-V', '--version', action='version', version="dev" )
+                        #version=pkg_resources.require("spotify-ripper")[0].version)
     parser.add_argument('-r', '--remove-from-playlist', action='store_true',
                         help='Delete tracks from playlist after successful ripping [Default=no]')
     parser.add_argument('uri', help='Spotify URI (either URI, a file of URIs or a search query)')
