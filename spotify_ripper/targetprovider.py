@@ -24,7 +24,7 @@ class TargetProvider():
     def get_track_metadata(self, track):
         args = self.args
 
-        artist = to_ascii(args, escape_filename_part(track.artists[0].name))
+        artist = to_ascii(args, escape_filename_part(', '.join(tas.name for tas in track.artists))
         album = to_ascii(args, escape_filename_part(track.album.name))
         track_name = to_ascii(args, escape_filename_part(track.name))
 
