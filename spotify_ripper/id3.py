@@ -72,8 +72,7 @@ def set_id3_and_cover(args, mp3_file, track):
         audio = mp3.MP3(mp3_file, ID3=id3.ID3)
         on_error = 'replace' if args.ascii_path_only else 'ignore'
         album = to_ascii(args, track.album.name, on_error)
-        artist = to_ascii(args, track.artists[0].name, on_error)
-        artists = to_ascii(args, ', '.join(tas.name for tas in track.artists), on_error)
+        artist = to_ascii(args, ', '.join(tas.name for tas in track.artists), on_error)
         title = to_ascii(args, track.name, on_error)
         if genres is not None and genres:
             genres_ascii = [to_ascii(args, genre) for genre in genres]
@@ -113,7 +112,7 @@ def set_id3_and_cover(args, mp3_file, track):
 
         if album is not None: audio.tags.add(id3.TALB(text=[id3_to_ascii(track.album.name, album)], encoding=3))
         audio.tags.add(id3.TIT2(text=[id3_to_ascii(track.name, title)], encoding=3))
-        audio.tags.add(id3.TPE1(text=[id3_to_ascii(', '.join(tas.name for tas in track.artists), artists)], encoding=3))
+        audio.tags.add(id3.TPE1(text=[id3_to_ascii(', '.join(tas.name for tas in track.artists), artist)], encoding=3))
         audio.tags.add(id3.TDRC(text=[str(track.album.year)], encoding=3))
         audio.tags.add(id3.TDRL(text=[str(track.album.year)], encoding=3))
         audio.tags.add(id3.TPOS(text=[idx_of_total_str(track.disc, num_discs)], encoding=3))
