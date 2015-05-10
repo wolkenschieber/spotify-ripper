@@ -49,8 +49,8 @@ Command Line
 
     usage: spotify-ripper [-h] [-S SETTINGS] [-a] [-A] [-b {160,320,96}] [-c]
                           [-d DIRECTORY] [-f] [-F] [-g {artist,album}] [-k KEY]
-                          [-u USER] [-p PASSWORD] [-l] [-L LOG] [-m] [-o] [-s]
-                          [-v VBR] [-V] [-r]
+                          [-u USER] [-p PASSWORD] [-l] [-L LOG] [-m] [-o]
+                          [-P] [-s] [-v VBR] [-V] [-r]
                           uri
 
     Rips Spotify URIs to MP3s with ID3 tags and album covers
@@ -82,6 +82,7 @@ Command Line
       -L LOG, --log LOG     Log in a log-friendly format to a file (use - to log to stdout)
       -m, --pcm             Saves a .pcm file with the raw PCM data
       -o, --overwrite       Overwrite existing MP3 files [Default=skip]
+      -P, --playlist        Store playlist in separate directories and keep track of changes
       -s, --strip-colors    Strip coloring from output[Default=colors]
       -v VBR, --vbr VBR     Lame VBR encoding quality setting [Default=0]
       -V, --version         show program's version number and exit
@@ -129,6 +130,8 @@ Prerequisites
 -  `mutagen <https://mutagen.readthedocs.org/en/latest/>`__
 
 -  `colorama <https://pypi.python.org/pypi/colorama>`__
+
+- `requests`__
 
 Mac OS X
 ~~~~~~~~
