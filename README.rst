@@ -10,6 +10,8 @@ URIs to MP3 files and includes ID3 tags and cover art.
 
 **Note that stream ripping violates the libspotify's ToS**
 
+**Hometaping kill music**
+
 Features
 --------
 
@@ -132,60 +134,6 @@ Prerequisites
 -  `colorama <https://pypi.python.org/pypi/colorama>`__
 
 - `requests`__
-
-Mac OS X
-~~~~~~~~
-
-Recommend approach uses `homebrew <http://brew.sh/>`__ and
-`pyenv <https://github.com/yyuu/pyenv>`__
-
-.. code:: bash
-
-    $ brew install homebrew/binary/libspotify
-    $ sudo ln -s /usr/local/opt/libspotify/lib/libspotify.12.1.51.dylib \
-        /usr/local/opt/libspotify/lib/libspotify
-    $ brew install lame
-    $ pip install spotify-ripper
-    $ pyenv rehash
-
-Download an application key file ``spotify_appkey.key`` from
-``https://devaccount.spotify.com/my-account/keys/`` (requires a Spotify
-Premium Account) and move the file to the ``~/.spotify-ripper`` directory (or use
-the ``-k | --key`` option).
-
-Ubuntu/Debian
-~~~~~~~~~~~~~
-
-Recommend approach uses `pyenv <https://github.com/yyuu/pyenv>`__. If
-you don't use pyenv, you need to install the ``python-dev`` package
-too. If you are installing on the Raspberry Pi (gen 1), use the
-`eabi-armv6hf
-version <https://developer.spotify.com/download/libspotify/libspotify-12.1.103-Linux-armv6-bcm2708hardfp-release.tar.gz>`__
-of libspotify.
-
-.. code:: bash
-
-    $ sudo apt-get install lame build-essential libffi-dev
-    $ wget https://developer.spotify.com/download/libspotify/libspotify-12.1.51-Linux-x86_64-release.tar.gz # (assuming 64-bit)
-    $ tar xvf libspotify-12.1.51-Linux-x86_64-release.tar.gz
-    $ cd libspotify-12.1.51-Linux-x86_64-release/
-    $ sudo make install prefix=/usr/local
-    $ pip install spotify-ripper
-    $ pyenv rehash
-
-Download an application key file ``spotify_appkey.key`` from
-``https://devaccount.spotify.com/my-account/keys/`` (requires a Spotify
-Premium Account) and move the file to the ``~/.spotify-ripper`` directory (or use
-the ``-k | --key`` option).
-
-Upgrade
-~~~~~~~
-
-Use ``pip`` to upgrade to the latest version.
-
-.. code:: bash
-
-    $ pip install --upgrade spotify-ripper
 
 License
 -------
