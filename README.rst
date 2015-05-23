@@ -10,7 +10,7 @@ URIs to MP3 files and includes ID3 tags and cover art.
 
 **Note that stream ripping violates the libspotify's ToS**
 
-**Hometaping kill music**
+**Hometaping kills music**
 
 Features
 --------
