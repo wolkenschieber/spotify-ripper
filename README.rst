@@ -1,5 +1,5 @@
-spotify-ripper |Version|
-========================
+spotify-ripper
+==============
 
 A fork of a fork of
 `spotify-ripper <https://github.com/robbeofficial/spotifyripper>`__ that
