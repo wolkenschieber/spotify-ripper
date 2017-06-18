@@ -1,3 +1,14 @@
+# libspotify's deprecation
+
+According to the [Libspotify SDK Resources](https://developer.spotify.com/technologies/libspotify/#libspotify-and-cocoalibspotify-downloads) `libSpotify` has been considered deprecated since 2015 and will be shut down in 2017.
+
+The library is no longer available for download and Spotify doesn't grant anymore api keys. 
+
+Ultimately this means that this project has ended.
+
+**Farewell**
+
+
 # spotify-ripper
 
 A fork of a fork of
@@ -10,18 +21,6 @@ URIs to MP3 files and includes ID3 tags and cover art.
 **Note that stream ripping violates the libspotify's ToS**
 
 **Hometaping kills music**
-
-
-## libspotify's deprecation
-
-According to the [Libspotify SDK Resources](https://developer.spotify.com/technologies/libspotify/#libspotify-and-cocoalibspotify-downloads) `libSpotify` has been considered deprecated since 2015 and will be shut down in 2017.
-
-The library is no longer available for download and Spotify doesn't grant anymore api keys. 
-
-Ultimately this means that this project has ended.
-
-**Farewell**
-
 
 ## Features
 
@@ -54,8 +53,6 @@ Ultimately this means that this project has ended.
 ### Command Line
 
 ``spotify-ripper`` takes many command-line options
-
-.. code::
 
     usage: spotify-ripper [-h] [-S SETTINGS] [-a] [-A] [-b {160,320,96}] [-c]
                           [-d DIRECTORY] [-f] [-F] [-g {artist,album}] [-k KEY]
