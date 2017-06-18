@@ -1,9 +1,8 @@
-spotify-ripper
-==============
+# spotify-ripper
 
 A fork of a fork of
-`spotify-ripper <https://github.com/robbeofficial/spotifyripper>`__ that
-uses `pyspotify <https://github.com/mopidy/pyspotify>`__ v2.x
+[spotify-ripper](https://github.com/robbeofficial/spotifyripper) that
+uses [pyspotify](https://github.com/mopidy/pyspotify) v2.x
 
 Spotify-ripper is a small ripper script for Spotify that rips Spotify
 URIs to MP3 files and includes ID3 tags and cover art.
@@ -12,8 +11,19 @@ URIs to MP3 files and includes ID3 tags and cover art.
 
 **Hometaping kills music**
 
-Features
---------
+
+## libspotify's deprecation
+
+According to the [Libspotify SDK Resources](https://developer.spotify.com/technologies/libspotify/#libspotify-and-cocoalibspotify-downloads) `libSpotify` has been considered deprecated since 2015 and will be shut down in 2017.
+
+The library is no longer available for download and Spotify doesn't grant anymore api keys. 
+
+Ultimately this means that this project has ended.
+
+**Farewell**
+
+
+## Features
 
 -  real-time VBR or CBR ripping from spotify PCM stream
 
@@ -39,11 +49,9 @@ Features
 
 -  use a config file to specify common command-line options
 
-Usage
------
+## Usage
 
-Command Line
-~~~~~~~~~~~~
+### Command Line
 
 ``spotify-ripper`` takes many command-line options
 
@@ -97,8 +105,7 @@ Command Line
         rip a list of URIs: spotify-ripper -u user -p password list_of_uris.txt
         search for tracks to rip: spotify-ripper -l -b 160 -o "album:Rumours track:'the chain'"
 
-Config File
-~~~~~~~~~~~
+### Config File
 
 For options that you want set on every run, you can use a config file named ``config.ini`` in the settings folder (defaults to ``~/.spotify-ripper``).  The options in the config file use the same name as the command line options with the exception that dashes are tranlated to ``snake_case``.  Any option specified in the command line will overwrite any setting in the config file.  Please put all options under a ``[main]`` section.
 
@@ -113,11 +120,9 @@ Here is an example config file
     last = True
     remove_from_playlist = True
 
-Installation
-------------
+## Installation
 
-Prerequisites
-~~~~~~~~~~~~~
+### Prerequisites
 
 -  `libspotify <https://developer.spotify.com/technologies/libspotify>`__
 
@@ -135,8 +140,7 @@ Prerequisites
 
 - `requests`__
 
-License
--------
+## License
 
 `MIT License <http://en.wikipedia.org/wiki/MIT_License>`__
 
